@@ -80,4 +80,8 @@ public class DuckySymmetricKey {
 		byte[] cipherBytes = Base64.getDecoder().decode(cipherText.getBytes());
 		return ByteBuffer.wrap(cipherBytes);
 	}
+	
+	public String encodeKey() {
+		return Base64.getEncoder().encodeToString(secretKey.getEncoded());
+	}
 }
