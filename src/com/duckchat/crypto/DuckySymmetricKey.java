@@ -1,3 +1,4 @@
+package com.duckchat.crypto;
 import java.nio.ByteBuffer;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;

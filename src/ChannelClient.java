@@ -19,6 +19,10 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
+import com.duckchat.crypto.DuckyKeyPair;
+import com.duckchat.crypto.DuckySymmetricKey;
+import com.duckchat.protocol.TextMessage;
+
 /**
  * A simple Swing-based client for the chat server.
  * It has a main frame window with a text field for entering
@@ -71,7 +75,7 @@ public class ChannelClient implements Runnable{
 	            	String plainText = symmetricKey.decryptText(cipherText);
 	            	System.out.println("plain: " + plainText);
 
-	            	connection.writeRaw(Protocol.message("andrew", cipherText));
+	            	connection.send(new TextMessage("andrew", "chan", dataField.getText(), symmetricKey));
 	                dataField.setText("");
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block

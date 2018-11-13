@@ -8,6 +8,8 @@ import java.net.UnknownHostException;
 
 import javax.swing.JOptionPane;
 
+import com.duckchat.protocol.Message;
+
 public class ServerConnection {
 	
 	private BufferedReader in;
@@ -20,6 +22,10 @@ public class ServerConnection {
         in = new BufferedReader(
                 new InputStreamReader(socket.getInputStream()));
         out = new PrintWriter(socket.getOutputStream(), true);
+	}
+	
+	public void send(Message msg) {
+		out.println(msg.serialize());
 	}
 	
 	public void writeRaw(String msg) {
