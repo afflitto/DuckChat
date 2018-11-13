@@ -24,6 +24,11 @@ public class DuckySymmetricKey {
 		this.secretKey = secretKey;
 	}
 	
+	public DuckySymmetricKey(String encodedKey) {
+		byte[] key = Base64.getDecoder().decode(encodedKey.getBytes());
+		this.secretKey = new SecretKeySpec(key, "AES");
+	}
+	
 	public SecretKey getKey() {
 		return secretKey;
 	}

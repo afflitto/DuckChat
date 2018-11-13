@@ -31,9 +31,9 @@ public class ChannelClient implements Runnable{
     private JFrame frame = new JFrame("Channel Client");
     private JMenuBar menuBar = new JMenuBar();
     private JMenu menu = new JMenu("Admin");
-    private JMenuItem menuItem = new JMenuItem("Menu Admin");
+    private JMenuItem menuItem = new JMenuItem("Generate new Group Key");
     private JTextField dataField = new JTextField(40);
-    private JTextArea messageArea = new JTextArea(8, 60);
+    private JTextArea messageArea = new JTextArea(60, 120);
     
     private ArrayList<String> messages = new ArrayList<String>();
 
@@ -97,14 +97,13 @@ public class ChannelClient implements Runnable{
      */
     public void connectToServer() throws IOException {
     	//InetAddress serverAddress = InetAddress.getLocalHost();
-    	String addr = JOptionPane.showInputDialog(frame, "address", "duckchat", JOptionPane.QUESTION_MESSAGE);
-    	
-        connection = new ServerConnection(addr, 2003);
+    	//String addr = JOptionPane.showInputDialog(frame, "address", "duckchat", JOptionPane.QUESTION_MESSAGE);
+        connection = new ServerConnection("localhost", 2003);
     	
 		try {
 			pair = new DuckyKeyPair(1024);
 			symmetricKey = new DuckySymmetricKey();
-			connection.send(new JoinChannelMessage("andrew", "chan", pair.getPublicKey()));
+			connection.send(new JoinChannelMessage("andrew"+(int)(Math.random()*10), "chan", pair.getPublicKey()));
 		} catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -135,15 +134,16 @@ public class ChannelClient implements Runnable{
              try {
             	 Message m = Message.deserialize(connection.readRaw());
             	 if(m.getType().equals("text")) {
-            		 TextMessage tm = (TextMessage) m;
+            		 TextMessage tm = new TextMessage(m.getRawData());
             		 response = symmetricKey.decryptText(tm.getCipherText());
                      System.out.println("msg: " + response);
                      response = "decrypted: " + response;
             	 } else if(m.getType().equals("key")) {
             		 try {
             			NewKeyMessage km = new NewKeyMessage(m.getRawData());
-						System.out.println("new sym key: " + km.decryptSymmetricKey(pair));
-						response = "new key: " + km.decryptSymmetricKey(pair);
+            			symmetricKey = km.decryptSymmetricKey(pair);
+						System.out.println("new sym key: " + symmetricKey.encodeKey());
+						response = "new key: " + symmetricKey.encodeKey();
 					} catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException
 							| IllegalBlockSizeException | BadPaddingException e) {
 						// TODO Auto-generated catch block

@@ -30,14 +30,13 @@ public class NewKeyMessage extends Message {
 		this.data.add(new Pair<>("timestamp", new Long(System.currentTimeMillis()/1000).toString()));
 	}
 	
-	public String decryptSymmetricKey(DuckyKeyPair pair) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
+	public DuckySymmetricKey decryptSymmetricKey(DuckyKeyPair pair) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
 		String encryptedKey = "";
 		for(Pair<String, String> kvItem : data) {
 			if(kvItem.getKey().equals("key")) {
 				encryptedKey = kvItem.getValue();
 			}
 		}
-		
-		return pair.decrypt(encryptedKey);
+		return new DuckySymmetricKey(pair.decrypt(encryptedKey));
 	}
 }
