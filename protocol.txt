@@ -1,0 +1,27 @@
+Protocol:
+    join:
+        Example: "join[name:andrew && channel:general && pubkey:PUBLICKEY]"
+        Description: Join a channel with your name and Base64 encoded public key
+        
+    text:
+        Example: "text[name:andrew && channel:general && ciphertext:xOjf6+HJxpVanqRtWiZgBnTtFeWnR0tHk5E7cNU8SBCz && timestamp:1542128587]"
+        Description: Send a message on a channel with your name, encrypted by the group's AES key. Timestamp is no. seconds since 1 Jan 1970.
+        
+    key:
+        Description: Response from server announcing a new AES key for the group
+        
+    getPubKeys:
+        Description: Get public keys for all members of the group
+        
+    adminGrant:
+        Description: Grant a user to the group by sending the group's AES key, encrypted by the user's public key
+    
+    adminDeny:
+        Description: Deny a user's request to join a group
+        
+    adminResetKey:
+        Description: Set new AES key and send to all users
+        
+    adminKick:
+        Description: Set new AES key and call adminResetKey (send only to new users)
+    
