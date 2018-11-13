@@ -39,5 +39,9 @@ public class DuckyKeyPair {
 		return new String(cipher.doFinal(cipherText));
 	}
 	
+	public PublicKey getPublicKey() {
+		return pair.getPublic();
+	}
+	
 	
 }

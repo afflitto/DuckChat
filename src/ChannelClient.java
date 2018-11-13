@@ -4,9 +4,15 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.InetAddress;
 import java.net.Socket;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
@@ -21,8 +27,9 @@ import javax.swing.JTextField;
  */
 public class ChannelClient implements Runnable{
 
-    private BufferedReader in;
-    private PrintWriter out;
+    private ServerConnection connection;
+    private DuckyKeyPair pair;
+    
     private JFrame frame = new JFrame("Channel Client");
     private JTextField dataField = new JTextField(40);
     private JTextArea messageArea = new JTextArea(8, 60);
@@ -55,7 +62,15 @@ public class ChannelClient implements Runnable{
         	
         	
             public void actionPerformed(ActionEvent e) {
-                out.println(dataField.getText());
+            	String cipherText = "";
+				try {
+					cipherText = pair.encrypt(dataField.getText());
+				} catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException
+						| IllegalBlockSizeException | BadPaddingException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+            	connection.writeRaw(Protocol.message("andrew", cipherText));
                 dataField.setText("");
             }
         });
@@ -69,30 +84,19 @@ public class ChannelClient implements Runnable{
      * client immediately after establishing a connection.
      */
     public void connectToServer() throws IOException {
-
-        // Get the server address from a dialog box.
-        String serverAddress = JOptionPane.showInputDialog(
-            frame,
-            "Enter IP Address of the Server:",
-            "Welcome to DuckChat",
-            JOptionPane.QUESTION_MESSAGE);
-
-        String name = JOptionPane.showInputDialog(
-                frame,
-                "Enter a name to use during this session: ",
-                "Welcome to DuckChat",
-                JOptionPane.QUESTION_MESSAGE);
-        // Make connection and initialize streams
-        Socket socket = new Socket(serverAddress, 2003);
-        in = new BufferedReader(
-                new InputStreamReader(socket.getInputStream()));
-        out = new PrintWriter(socket.getOutputStream(), true);
-        out.println("["+name+"]");
-
-        // Consume the initial welcoming messages from the server
-        for (int i = 0; i < 3; i++) {
-            messageArea.append(in.readLine() + "\n");
-        }
+    	//InetAddress serverAddress = InetAddress.getLocalHost();
+    	String addr = JOptionPane.showInputDialog(frame, "address", "duckchat", JOptionPane.QUESTION_MESSAGE);
+    	
+        connection = new ServerConnection(addr, 2003);
+    	
+		try {
+			pair = new DuckyKeyPair(1024);
+	    	connection.writeRaw(Protocol.joinChannel("andrew", pair.getPublicKey(), "#channel"));
+		} catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	
         
     }
 
@@ -116,7 +120,7 @@ public class ChannelClient implements Runnable{
 			
 			 String response;
              try {
-                 response = in.readLine();
+                 response = connection.readRaw();
                  if (response == null || response.equals("")) {
                        System.exit(0);
                    }
