@@ -8,13 +8,11 @@ import javafx.util.Pair;
 public class TextMessage extends Message {
 
 	public TextMessage(ArrayList<Pair<String, String>> data) {
-		this.type = "text";
-		this.data = data;		
+		super(data, "text");
 	}
 	
 	public TextMessage(String name, String channel, String plainText, DuckySymmetricKey symmetricKey) {
-		this.type = "text";
-		this.data = new ArrayList<>();
+		super(new ArrayList<>(), "text");
 		
 		this.data.add(new Pair<>("name", name));
 		this.data.add(new Pair<>("channel", channel));

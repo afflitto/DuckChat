@@ -4,9 +4,14 @@ import java.util.ArrayList;
 
 import javafx.util.*;
 
-public abstract class Message {
+public class Message {
 	protected ArrayList<Pair<String, String>> data;
 	protected String type = "";
+	
+	public Message(ArrayList<Pair<String, String>> pairs, String type) {
+		this.data = pairs;
+		this.type = type;
+	}
 	
 	public String serialize() {
 		String message = type;
@@ -37,17 +42,15 @@ public abstract class Message {
 			}
 		}
 		
-		if(type.equals("join")) {
-			return new JoinChannelMessage(pairList);
-		} else if(type.equals("text")) {
-			return new TextMessage(pairList);
-		}
-		
-		return null;
+		return new Message(pairList, type);
 	}
 	
 	public String getType() {
 		return this.type;
+	}
+	
+	public ArrayList<Pair<String, String>> getRawData() {
+		return data;
 	}
 	
 }

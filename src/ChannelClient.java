@@ -10,20 +10,11 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
+import javax.crypto.*;
+import javax.swing.*;
 
-import com.duckchat.crypto.DuckyKeyPair;
-import com.duckchat.crypto.DuckySymmetricKey;
-import com.duckchat.protocol.JoinChannelMessage;
-import com.duckchat.protocol.Message;
-import com.duckchat.protocol.TextMessage;
+import com.duckchat.crypto.*;
+import com.duckchat.protocol.*;
 
 /**
  * A simple Swing-based client for the chat server.
@@ -38,6 +29,9 @@ public class ChannelClient implements Runnable{
     private DuckySymmetricKey symmetricKey;
     
     private JFrame frame = new JFrame("Channel Client");
+    private JMenuBar menuBar = new JMenuBar();
+    private JMenu menu = new JMenu("Admin");
+    private JMenuItem menuItem = new JMenuItem("Menu Admin");
     private JTextField dataField = new JTextField(40);
     private JTextArea messageArea = new JTextArea(8, 60);
     
@@ -54,6 +48,18 @@ public class ChannelClient implements Runnable{
         messageArea.setEditable(false);
         frame.getContentPane().add(dataField, "South");
         frame.getContentPane().add(new JScrollPane(messageArea), "Center");
+        
+        menuBar.add(menu);
+        menu.add(menuItem);
+        frame.setJMenuBar(menuBar);
+        
+        menuItem.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		DuckySymmetricKey newKey = new DuckySymmetricKey();
+				System.out.println("new sym key: " + newKey.encodeKey());
+        		connection.send(new NewKeyMessage("chan", newKey, new DuckyPublicKey(pair.getPublicKey())));
+        	}
+        });
 
         // Add Listeners
         dataField.addActionListener(new ActionListener() {
@@ -133,6 +139,17 @@ public class ChannelClient implements Runnable{
             		 response = symmetricKey.decryptText(tm.getCipherText());
                      System.out.println("msg: " + response);
                      response = "decrypted: " + response;
+            	 } else if(m.getType().equals("key")) {
+            		 try {
+            			NewKeyMessage km = new NewKeyMessage(m.getRawData());
+						System.out.println("new sym key: " + km.decryptSymmetricKey(pair));
+						response = "new key: " + km.decryptSymmetricKey(pair);
+					} catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException
+							| IllegalBlockSizeException | BadPaddingException e) {
+						// TODO Auto-generated catch block
+						response = "err";
+						e.printStackTrace();
+					}
             	 } else {
             		 response = m.serialize();
             		 System.out.println("type: " + m.getType());

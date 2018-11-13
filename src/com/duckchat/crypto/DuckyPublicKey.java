@@ -29,6 +29,9 @@ public class DuckyPublicKey {
 		cipher.init(Cipher.ENCRYPT_MODE, pubKey);
 		return Base64.getEncoder().encodeToString(cipher.doFinal(msg.getBytes()));
 		
+		//Cipher cipher = Cipher.getInstance("RSA");
+//		cipher.init(Cipher.ENCRYPT_MODE, pair.getPublic());
+//		return Base64.getEncoder().encodeToString(cipher.doFinal(msg.getBytes()));
 	}
 
 	public PublicKey getPublicKey() {

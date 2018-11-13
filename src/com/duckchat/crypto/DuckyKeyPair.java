@@ -12,7 +12,7 @@ public class DuckyKeyPair {
 	private KeyPair pair;
 	
 	public DuckyKeyPair() throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException {
-		new DuckyKeyPair(1024);
+		this(1024);
 	}
 	
 	public DuckyKeyPair(int keySize) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException {
@@ -35,7 +35,7 @@ public class DuckyKeyPair {
 	
 	public String decrypt(String msg) throws NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
 		Cipher cipher = Cipher.getInstance("RSA");
-		cipher.init(Cipher.DECRYPT_MODE, pair.getPublic());
+		cipher.init(Cipher.DECRYPT_MODE, pair.getPrivate());
 		byte[] cipherText = Base64.getDecoder().decode(msg);
 		return new String(cipher.doFinal(cipherText));
 	}
