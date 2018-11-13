@@ -21,6 +21,8 @@ import javax.swing.JTextField;
 
 import com.duckchat.crypto.DuckyKeyPair;
 import com.duckchat.crypto.DuckySymmetricKey;
+import com.duckchat.protocol.JoinChannelMessage;
+import com.duckchat.protocol.Message;
 import com.duckchat.protocol.TextMessage;
 
 /**
@@ -69,12 +71,6 @@ public class ChannelClient implements Runnable{
             public void actionPerformed(ActionEvent e) {
             	String cipherText;
 				try {
-					cipherText = symmetricKey.encryptText(dataField.getText());
-	            	System.out.println("cipher: " + cipherText);
-	            	
-	            	String plainText = symmetricKey.decryptText(cipherText);
-	            	System.out.println("plain: " + plainText);
-
 	            	connection.send(new TextMessage("andrew", "chan", dataField.getText(), symmetricKey));
 	                dataField.setText("");
 				} catch (Exception e1) {
@@ -102,7 +98,7 @@ public class ChannelClient implements Runnable{
 		try {
 			pair = new DuckyKeyPair(1024);
 			symmetricKey = new DuckySymmetricKey();
-	    	connection.writeRaw(Protocol.joinChannel("andrew", pair.getPublicKey(), "#channel"));
+			connection.send(new JoinChannelMessage("andrew", "chan", pair.getPublicKey()));
 		} catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -131,20 +127,27 @@ public class ChannelClient implements Runnable{
 			
 			 String response;
              try {
-                 response = connection.readRaw();
-                 if (response == null || response.equals("")) {
-                       System.exit(0);
-                   }
+            	 Message m = Message.deserialize(connection.readRaw());
+            	 if(m.getType().equals("text")) {
+            		 TextMessage tm = (TextMessage) m;
+            		 response = symmetricKey.decryptText(tm.getCipherText());
+                     System.out.println("msg: " + response);
+                     response = "decrypted: " + response;
+            	 } else {
+            		 response = m.serialize();
+            		 System.out.println("type: " + m.getType());
+            	 }
+            	
+//                 if (response == null || response.equals("")) {
+//                       System.exit(0);
+//                   }
              } catch (IOException ex) {
                     response = "Error: " + ex;
              }
              
              messages.add(response);
-             messageArea.selectAll();
-             for(String m: messages) {
-            	 messageArea.append(m+"\n");
-             }
-             
+        	 messageArea.append(response+"\n");
+
 		}
 	}
 }

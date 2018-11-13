@@ -25,4 +25,13 @@ public class TextMessage extends Message {
 		}
 		this.data.add(new Pair<>("timestamp", new Long(System.currentTimeMillis()/1000).toString()));
 	}
+	
+	public String getCipherText() {
+		for(Pair<String, String> pair : data) {
+			if(pair.getKey().equals("ciphertext")) {
+				return pair.getValue();
+			}
+		}
+		return null;
+	}
 }

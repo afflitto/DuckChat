@@ -14,6 +14,7 @@ public class JoinChannelMessage extends Message {
 	
 	public JoinChannelMessage(String name, String channel, PublicKey pubKey) {
 		this.type = "join";
+		this.data = new ArrayList<>();
 		
 		this.data.add(new Pair<>("name", name));
 		this.data.add(new Pair<>("channel", channel));

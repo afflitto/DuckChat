@@ -6,7 +6,7 @@ import javafx.util.*;
 
 public abstract class Message {
 	protected ArrayList<Pair<String, String>> data;
-	protected String type;	
+	protected String type = "";
 	
 	public String serialize() {
 		String message = type;
@@ -22,26 +22,32 @@ public abstract class Message {
 	}
 	
 	public static Message deserialize(String message) {
-		String type = message.split("[")[0];
-		String payload = message.split("[")[1];
+		String type = message.split("\\[")[0];
+		String payload = message.split("\\[")[1];
 		
 		String[] pairs = payload.split(" && ");
 		ArrayList<Pair<String, String>> pairList = new ArrayList<>();
 		
 		for(String pair : pairs) {
-			String key = pair.split(":")[0];
-			String value = pair.split(":")[1];
-			
-			pairList.add(new Pair<>(key, value));
+			if(pair.split(":").length > 1) {
+				String key = pair.split(":")[0];
+				String value = pair.split(":")[1];
+				
+				pairList.add(new Pair<>(key, value));
+			}
 		}
 		
-		if(type == "join") {
+		if(type.equals("join")) {
 			return new JoinChannelMessage(pairList);
-		} else if(type == "text") {
+		} else if(type.equals("text")) {
 			return new TextMessage(pairList);
 		}
 		
 		return null;
+	}
+	
+	public String getType() {
+		return this.type;
 	}
 	
 }
