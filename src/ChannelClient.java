@@ -29,6 +29,7 @@ public class ChannelClient implements Runnable{
 
     private ServerConnection connection;
     private DuckyKeyPair pair;
+    private DuckySymmetricKey symmetricKey;
     
     private JFrame frame = new JFrame("Channel Client");
     private JTextField dataField = new JTextField(40);
@@ -62,16 +63,21 @@ public class ChannelClient implements Runnable{
         	
         	
             public void actionPerformed(ActionEvent e) {
-            	String cipherText = "";
+            	String cipherText;
 				try {
-					cipherText = pair.encrypt(dataField.getText());
-				} catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException
-						| IllegalBlockSizeException | BadPaddingException e1) {
+					cipherText = symmetricKey.encryptText(dataField.getText());
+	            	System.out.println("cipher: " + cipherText);
+	            	
+	            	String plainText = symmetricKey.decryptText(cipherText);
+	            	System.out.println("plain: " + plainText);
+
+	            	connection.writeRaw(Protocol.message("andrew", cipherText));
+	                dataField.setText("");
+				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-            	connection.writeRaw(Protocol.message("andrew", cipherText));
-                dataField.setText("");
+
             }
         });
     }
@@ -91,6 +97,7 @@ public class ChannelClient implements Runnable{
     	
 		try {
 			pair = new DuckyKeyPair(1024);
+			symmetricKey = new DuckySymmetricKey();
 	    	connection.writeRaw(Protocol.joinChannel("andrew", pair.getPublicKey(), "#channel"));
 		} catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException e) {
 			// TODO Auto-generated catch block
