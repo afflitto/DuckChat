@@ -8,8 +8,8 @@ Protocol:
         Description: Send a message on a channel with your name, encrypted by the group's AES key. Timestamp is no. seconds since 1 Jan 1970.
         
     key:
-        Example: "key[channel:general && key:eKC/WERtd2v5kE23Mar4NenAbhDQ2DzcdT8/M93JObQbBQGI4vtlzj1xGJadCGGMHSnsXlo8Xm8cvQrzX5aQJfKpIotBikaMQA3qKHFaehAIL7Izs0EECVHbCEAw9MUqT3agHxMyACIwLbcYLMQ/xqUlQt/vz1OHlGmC4Mx3sjs= && timestamp:1542128589]"
-        Description: Response from server announcing a new AES key for the group
+        Example: "key[name:andrew && channel:general && key:eKC/WERtd2v5kE23Mar4NenAbhDQ2DzcdT8/M93JObQbBQGI4vtlzj1xGJadCGGMHSnsXlo8Xm8cvQrzX5aQJfKpIotBikaMQA3qKHFaehAIL7Izs0EECVHbCEAw9MUqT3agHxMyACIwLbcYLMQ/xqUlQt/vz1OHlGmC4Mx3sjs= && timestamp:1542128589]"
+        Description: Message from admin to a user to establish a new symmetric key for the group. Symmetric key is encrypted with the user's public key.
         
         
     getPubKeys:
