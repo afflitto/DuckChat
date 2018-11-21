@@ -1,41 +1,48 @@
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.InetAddress;
-import java.net.Socket;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 
-import javax.crypto.*;
-import javax.swing.*;
+import javax.crypto.NoSuchPaddingException;
+import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 
-import com.duckchat.crypto.*;
-import com.duckchat.protocol.*;
+import com.duckchat.crypto.DuckyKeyPair;
+import com.duckchat.crypto.DuckyPublicKey;
+import com.duckchat.crypto.DuckySymmetricKey;
+import com.duckchat.protocol.JoinChannelMessage;
+import com.duckchat.protocol.NewKeyMessage;
+import com.duckchat.protocol.TextMessage;
+import com.duckchat.protocol.DebugMessage;
+
 
 /**
  * A simple Swing-based client for the chat server.
  * It has a main frame window with a text field for entering
- * strings and a textarea to see the results of capitalizing
+ * strings and a text area to see the results of capitalizing
  * them.
  */
 public class ChannelClient implements Runnable{
 
     private ServerConnection connection;
-    private DuckyKeyPair pair;
-    private DuckySymmetricKey symmetricKey;
+    private ChannelManager manager;
+
     
     private JFrame frame = new JFrame("Channel Client");
     private JMenuBar menuBar = new JMenuBar();
     private JMenu menu = new JMenu("Admin");
-    private JMenuItem menuItem = new JMenuItem("Generate new Group Key");
+    private JMenuItem keyGenItem = new JMenuItem("Generate new Group Key");
+    private JMenuItem closeServerItem = new JMenuItem("Close Server");
     private JTextField dataField = new JTextField(40);
     private JTextArea messageArea = new JTextArea(60, 120);
     
-    private ArrayList<String> messages = new ArrayList<String>();
+
 
     /**
      * Constructs the client by laying out the GUI and registering a
@@ -50,14 +57,22 @@ public class ChannelClient implements Runnable{
         frame.getContentPane().add(new JScrollPane(messageArea), "Center");
         
         menuBar.add(menu);
-        menu.add(menuItem);
+        menu.add(keyGenItem);
+        menu.add(closeServerItem);
         frame.setJMenuBar(menuBar);
         
-        menuItem.addActionListener(new ActionListener() {
+        manager = new ChannelManager(messageArea);
+        
+        keyGenItem.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
         		DuckySymmetricKey newKey = new DuckySymmetricKey();
 				System.out.println("new sym key: " + newKey.encodeKey());
-        		connection.send(new NewKeyMessage("chan", newKey, new DuckyPublicKey(pair.getPublicKey())));
+        		connection.send(new NewKeyMessage("chan", newKey, new DuckyPublicKey(manager.getPair().getPublicKey())));
+        	}
+        });
+        closeServerItem.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		connection.send(new DebugMessage(0,"chan",manager.getSymmetricKey()));
         	}
         });
 
@@ -77,7 +92,7 @@ public class ChannelClient implements Runnable{
             public void actionPerformed(ActionEvent e) {
             	String cipherText;
 				try {
-	            	connection.send(new TextMessage("andrew", "chan", dataField.getText(), symmetricKey));
+	            	connection.send(new TextMessage("andrew", "chan", dataField.getText(), manager.getSymmetricKey()));
 	                dataField.setText("");
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
@@ -101,9 +116,9 @@ public class ChannelClient implements Runnable{
         connection = new ServerConnection("localhost", 2003);
     	
 		try {
-			pair = new DuckyKeyPair(1024);
-			symmetricKey = new DuckySymmetricKey();
-			connection.send(new JoinChannelMessage("andrew"+(int)(Math.random()*10), "chan", pair.getPublicKey()));
+			manager.setDuckyKeyPair(new DuckyKeyPair(1024));
+			manager.setSymmetricKey(new DuckySymmetricKey());
+			connection.send(new JoinChannelMessage("andrew"+(int)(Math.random()*10), "chan", manager.getPair().getPublicKey()));
 		} catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -130,40 +145,8 @@ public class ChannelClient implements Runnable{
 		
 		while(true) {
 			
-			 String response;
-             try {
-            	 Message m = Message.deserialize(connection.readRaw());
-            	 if(m.getType().equals("text")) {
-            		 TextMessage tm = new TextMessage(m.getRawData());
-            		 response = symmetricKey.decryptText(tm.getCipherText());
-                     System.out.println("msg: " + response);
-                     response = "decrypted: " + response;
-            	 } else if(m.getType().equals("key")) {
-            		 try {
-            			NewKeyMessage km = new NewKeyMessage(m.getRawData());
-            			symmetricKey = km.decryptSymmetricKey(pair);
-						System.out.println("new sym key: " + symmetricKey.encodeKey());
-						response = "new key: " + symmetricKey.encodeKey();
-					} catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException
-							| IllegalBlockSizeException | BadPaddingException e) {
-						// TODO Auto-generated catch block
-						response = "err";
-						e.printStackTrace();
-					}
-            	 } else {
-            		 response = m.serialize();
-            		 System.out.println("type: " + m.getType());
-            	 }
-            	
-//                 if (response == null || response.equals("")) {
-//                       System.exit(0);
-//                   }
-             } catch (IOException ex) {
-                    response = "Error: " + ex;
-             }
+                    manager.parseResponse(connection);
              
-             messages.add(response);
-        	 messageArea.append(response+"\n");
 
 		}
 	}

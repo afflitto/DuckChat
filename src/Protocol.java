@@ -14,4 +14,8 @@ public class Protocol {
 	public static String adminSetKey(String key) {
 		return "[key:" + key + "]";
 	}
+        
+        public static String adminDebug(int messageFlag) {
+		return "[debug:" + messageFlag + "]";
+	}
 }
