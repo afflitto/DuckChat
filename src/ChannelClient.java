@@ -32,7 +32,7 @@ public class ChannelClient implements Runnable{
 
     private ServerConnection connection;
     private ChannelManager manager;
-
+    
     
     private JFrame frame = new JFrame("Channel Client");
     private JMenuBar menuBar = new JMenuBar();
