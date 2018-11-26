@@ -1,7 +1,11 @@
 package server;
 
-import java.net.*;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
 
 public class EchoServer extends Thread {
     
@@ -10,9 +14,9 @@ public class EchoServer extends Thread {
     protected static boolean serverContinue = true;
     protected Socket clientSocket;
     static int port = 2003;
+    static ServerSocket serverSocket = null;
 
     public static void main(String[] args) throws IOException {
-        ServerSocket serverSocket = null;
 
         try {
             serverSocket = new ServerSocket(port);
@@ -23,8 +27,11 @@ public class EchoServer extends Thread {
                     new EchoServer(serverSocket.accept());
                 }
             } catch (IOException e) {
-                System.err.println("Accept failed.");
-                System.exit(1);
+            	if(serverContinue) {
+            		System.err.println("Accept failed.");
+                    System.exit(1);
+            	}
+                
             }
         } catch (IOException e) {
             System.err.println("Could not listen on port: " + port + ".");
@@ -63,7 +70,17 @@ public class EchoServer extends Thread {
                     if (inputLine.contains("flag:0")) {
                         serverContinue = false;
                         System.out.println("Closing");
-                        
+                        new Thread(new Runnable() {
+							
+							@Override
+							public void run() {
+								try {
+									serverSocket.close();
+								} catch (IOException e) {
+									e.printStackTrace();
+								}
+							}
+						}).start();;
                     }
                 }
             }
