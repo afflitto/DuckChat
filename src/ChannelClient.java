@@ -24,7 +24,7 @@ import com.duckchat.protocol.DebugMessage;
 /**
  * A simple Swing-based client for the chat server. It has a main frame window
  * with a text field for entering strings and a text area to see the results of
- * capitalizing them.
+ * capitalizing them.````````
  */
 
 public class ChannelClient implements Runnable{
