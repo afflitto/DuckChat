@@ -33,6 +33,7 @@ public class ChannelClient implements Runnable{
     private ChannelManager manager;
     
     private String username = "";
+    private String channel = "";
 
     
     private JFrame frame = new JFrame("Channel Client");
@@ -52,7 +53,11 @@ public class ChannelClient implements Runnable{
      * listener sends the textfield contents to the server.
      */
     public ChannelClient() {
-
+//gather user info
+    	username = JOptionPane.showInputDialog("What is your name?");
+    	channel = JOptionPane.showInputDialog("What Channel would you like to join?");
+    	
+    	
         // Layout GUI
         messageArea.setEditable(false);
         frame.getContentPane().add(dataField, "South");
@@ -70,12 +75,12 @@ public class ChannelClient implements Runnable{
         	public void actionPerformed(ActionEvent e) {
         		DuckySymmetricKey newKey = new DuckySymmetricKey();
 				System.out.println("new sym key: " + newKey.encodeKey());
-        		connection.send(new NewKeyMessage("chan", newKey, new DuckyPublicKey(manager.getPair().getPublicKey())));
+        		connection.send(new NewKeyMessage(channel, newKey, new DuckyPublicKey(manager.getPair().getPublicKey())));
         	}
         });
         closeServerItem.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
-        		connection.send(new DebugMessage(0,"chan",manager.getSymmetricKey()));
+        		connection.send(new DebugMessage(0,channel,manager.getSymmetricKey()));
         	}
         });
         listUsersItem.addActionListener(new ActionListener() {
@@ -103,9 +108,8 @@ public class ChannelClient implements Runnable{
         	
         	
             public void actionPerformed(ActionEvent e) {
-            	String cipherText;
 				try {
-					connection.send(new TextMessage(username, "chan", dataField.getText(), manager.getSymmetricKey()));
+					connection.send(new TextMessage(username, channel, dataField.getText(), manager.getSymmetricKey()));
 					dataField.setText("");
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
@@ -131,7 +135,7 @@ public class ChannelClient implements Runnable{
 		try {
 			manager.setDuckyKeyPair(new DuckyKeyPair(1024));
 			manager.setSymmetricKey(new DuckySymmetricKey());
-			connection.send(new JoinChannelMessage(username, "chan",
+			connection.send(new JoinChannelMessage(username, channel,
 					manager.getPair().getPublicKey()));
 		} catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException e) {
 			// TODO Auto-generated catch block
