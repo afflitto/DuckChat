@@ -14,9 +14,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-import com.duckchat.crypto.DuckyKeyPair;
-import com.duckchat.crypto.DuckyPublicKey;
-import com.duckchat.crypto.DuckySymmetricKey;
+import com.duckchat.channel.User;
+import com.duckchat.crypto.*;
 import com.duckchat.protocol.JoinChannelMessage;
 import com.duckchat.protocol.NewKeyMessage;
 import com.duckchat.protocol.TextMessage;
@@ -27,66 +26,84 @@ import com.duckchat.protocol.DebugMessage;
  * with a text field for entering strings and a text area to see the results of
  * capitalizing them.
  */
-public class ChannelClient implements Runnable {
 
-	private ServerConnection connection;
-	private ChannelManager manager;
+public class ChannelClient implements Runnable{
 
-	private JFrame frame = new JFrame("Channel Client");
-	private JMenuBar menuBar = new JMenuBar();
-	private JMenu menu = new JMenu("Admin");
-	private JMenuItem keyGenItem = new JMenuItem("Generate new Group Key");
-	private JMenuItem closeServerItem = new JMenuItem("Close Server");
-	private JTextField dataField = new JTextField(40);
-	private JTextArea messageArea = new JTextArea(60, 120);
-	private String username = "";
+    private ServerConnection connection;
+    private ChannelManager manager;
+    
+    private String username = "";
 
-	/**
-	 * Constructs the client by laying out the GUI and registering a listener with
-	 * the textfield so that pressing Enter in the listener sends the textfield
-	 * contents to the server.
-	 */
-	public ChannelClient() {
-		
-		//Needs to get user information
-		username = JOptionPane.showInputDialog("Enter your name");
-		
-		// Layout GUI
-		messageArea.setEditable(false);
-		frame.getContentPane().add(dataField, "South");
-		frame.getContentPane().add(new JScrollPane(messageArea), "Center");
+    
+    private JFrame frame = new JFrame("Channel Client");
+    private JMenuBar menuBar = new JMenuBar();
+    private JMenu menu = new JMenu("Admin");
+    private JMenuItem keyGenItem = new JMenuItem("Generate new Group Key");
+    private JMenuItem closeServerItem = new JMenuItem("Close Server");
+    private JMenuItem listUsersItem = new JMenuItem("List users");
+    private JTextField dataField = new JTextField(40);
+    private JTextArea messageArea = new JTextArea(60, 120);
+    
 
-		menuBar.add(menu);
-		menu.add(keyGenItem);
-		menu.add(closeServerItem);
-		frame.setJMenuBar(menuBar);
-		
-		manager = new ChannelManager(messageArea);
 
-		keyGenItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				DuckySymmetricKey newKey = new DuckySymmetricKey();
+    /**
+     * Constructs the client by laying out the GUI and registering a
+     * listener with the textfield so that pressing Enter in the
+     * listener sends the textfield contents to the server.
+     */
+    public ChannelClient() {
+
+        // Layout GUI
+        messageArea.setEditable(false);
+        frame.getContentPane().add(dataField, "South");
+        frame.getContentPane().add(new JScrollPane(messageArea), "Center");
+        
+        menuBar.add(menu);
+        menu.add(keyGenItem);
+        menu.add(closeServerItem);
+        menu.add(listUsersItem);
+        frame.setJMenuBar(menuBar);
+        
+        manager = new ChannelManager(messageArea);
+        
+        keyGenItem.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		DuckySymmetricKey newKey = new DuckySymmetricKey();
 				System.out.println("new sym key: " + newKey.encodeKey());
-				connection
-						.send(new NewKeyMessage("chan", newKey, new DuckyPublicKey(manager.getPair().getPublicKey())));
-			}
-		});
-		closeServerItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				connection.send(new DebugMessage(0, "chan", manager.getSymmetricKey()));
-			}
-		});
+        		connection.send(new NewKeyMessage("chan", newKey, new DuckyPublicKey(manager.getPair().getPublicKey())));
+        	}
+        });
+        closeServerItem.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		connection.send(new DebugMessage(0,"chan",manager.getSymmetricKey()));
+        	}
+        });
+        listUsersItem.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		System.out.println("Users:");
+        		messageArea.append("Users:");
+        		for(User user : Application.users) {
+        			System.out.println("\t"+user.getName()+":"+user.getPubKey().encode());
+            		messageArea.append("\t"+user.getName()+":"+user.getPubKey().encode());
+        		}
+        	}
+        });
 
-		// Add Listeners
-		dataField.addActionListener(new ActionListener() {
-			/**
-			 * Responds to pressing the enter key in the textfield by sending the contents
-			 * of the text field to the server and displaying the response from the server
-			 * in the text area. If the response is "." we exit the whole application, which
-			 * closes all sockets, streams and windows.
-			 */
-
-			public void actionPerformed(ActionEvent e) {
+        // Add Listeners
+        dataField.addActionListener(new ActionListener() {
+            /**
+             * Responds to pressing the enter key in the textfield
+             * by sending the contents of the text field to the
+             * server and displaying the response from the server
+             * in the text area.  If the response is "." we exit
+             * the whole application, which closes all sockets,
+             * streams and windows.
+             */
+        	
+        	
+        	
+            public void actionPerformed(ActionEvent e) {
+            	String cipherText;
 				try {
 					connection.send(new TextMessage(username, "chan", dataField.getText(), manager.getSymmetricKey()));
 					dataField.setText("");
