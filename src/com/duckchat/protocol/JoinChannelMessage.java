@@ -9,6 +9,7 @@ import com.duckchat.crypto.DuckyPublicKey;
 
 import javafx.util.*;
 
+@SuppressWarnings("restriction")
 public class JoinChannelMessage extends Message {
 
 	public JoinChannelMessage(ArrayList<Pair<String, String>> data) {

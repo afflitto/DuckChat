@@ -9,30 +9,30 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import com.duckchat.channel.User;
-import com.duckchat.crypto.DuckyKeyPair;
-import com.duckchat.crypto.DuckyPublicKey;
-import com.duckchat.crypto.DuckySymmetricKey;
+import com.duckchat.crypto.*;
 import com.duckchat.protocol.JoinChannelMessage;
 import com.duckchat.protocol.NewKeyMessage;
 import com.duckchat.protocol.TextMessage;
 import com.duckchat.protocol.DebugMessage;
 
-
 /**
- * A simple Swing-based client for the chat server.
- * It has a main frame window with a text field for entering
- * strings and a text area to see the results of capitalizing
- * them.
+ * A simple Swing-based client for the chat server. It has a main frame window
+ * with a text field for entering strings and a text area to see the results of
+ * capitalizing them.
  */
+
 public class ChannelClient implements Runnable{
 
     private ServerConnection connection;
     private ChannelManager manager;
+    
+    private String username = "";
 
     
     private JFrame frame = new JFrame("Channel Client");
@@ -105,61 +105,60 @@ public class ChannelClient implements Runnable{
             public void actionPerformed(ActionEvent e) {
             	String cipherText;
 				try {
-	            	connection.send(new TextMessage("andrew", "chan", dataField.getText(), manager.getSymmetricKey()));
-	                dataField.setText("");
+					connection.send(new TextMessage(username, "chan", dataField.getText(), manager.getSymmetricKey()));
+					dataField.setText("");
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 
-            }
-        });
-    }
+			}
+		});
+	}
 
-    /**
-     * Implements the connection logic by prompting the end user for
-     * the server's IP address, connecting, setting up streams, and
-     * consuming the welcome messages from the server.  The Channel
-     * protocol says that the server sends three lines of text to the
-     * client immediately after establishing a connection.
-     */
-    public void connectToServer() throws IOException {
-    	//InetAddress serverAddress = InetAddress.getLocalHost();
-    	//String addr = JOptionPane.showInputDialog(frame, "address", "duckchat", JOptionPane.QUESTION_MESSAGE);
-        connection = new ServerConnection("localhost", 2003);
-    	
+	/**
+	 * Implements the connection logic by prompting the end user for the server's IP
+	 * address, connecting, setting up streams, and consuming the welcome messages
+	 * from the server. The Channel protocol says that the server sends three lines
+	 * of text to the client immediately after establishing a connection.
+	 */
+	public void connectToServer() throws IOException {
+		// InetAddress serverAddress = InetAddress.getLocalHost();
+		// String addr = JOptionPane.showInputDialog(frame, "address", "duckchat",
+		// JOptionPane.QUESTION_MESSAGE);
+		connection = new ServerConnection("localhost", 2003);
+
 		try {
 			manager.setDuckyKeyPair(new DuckyKeyPair(1024));
 			manager.setSymmetricKey(new DuckySymmetricKey());
-			connection.send(new JoinChannelMessage("andrew"+(int)(Math.random()*10), "chan", manager.getPair().getPublicKey()));
+			connection.send(new JoinChannelMessage(username, "chan",
+					manager.getPair().getPublicKey()));
 		} catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-    	
-        
-    }
 
-    /**
-     * Runs the client application.
-     */
-    public static void main(String[] args) throws Exception {
-        ChannelClient client = new ChannelClient();
-        client.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        client.frame.pack();
-        client.frame.setVisible(true);
-        client.connectToServer();
-        Thread t = new Thread(client);
-        t.start();
-    }
-    
+	}
+
+	/**
+	 * Runs the client application.
+	 */
+	public static void main(String[] args) throws Exception {
+		ChannelClient client = new ChannelClient();
+		client.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		client.frame.pack();
+		client.frame.setVisible(true);
+		client.connectToServer();
+		Thread t = new Thread(client);
+		t.start();
+	}
+
 	public void run() {
 		System.out.println("I'm Connected!");
-		
-		while(true) {
-			
-                    manager.parseResponse(connection);
-             
+
+		while (true) {
+
+			manager.parseResponse(connection);
 
 		}
 	}

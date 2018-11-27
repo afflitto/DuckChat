@@ -2,7 +2,6 @@ package com.duckchat.protocol;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.security.PublicKey;
 import java.util.ArrayList;
 
 import javax.crypto.BadPaddingException;
@@ -13,6 +12,7 @@ import com.duckchat.crypto.*;
 
 import javafx.util.Pair;
 
+@SuppressWarnings("restriction")
 public class NewKeyMessage extends Message {
 	public NewKeyMessage(ArrayList<Pair<String, String>> data) {
 		super(data, "key");		

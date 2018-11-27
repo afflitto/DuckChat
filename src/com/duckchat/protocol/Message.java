@@ -2,8 +2,10 @@ package com.duckchat.protocol;
 
 import java.util.ArrayList;
 
+
 import javafx.util.*;
 
+@SuppressWarnings("restriction")
 public class Message {
 	protected ArrayList<Pair<String, String>> data;
 	protected String type = "";
@@ -27,6 +29,7 @@ public class Message {
 	}
 	
 	public static Message deserialize(String message) {
+		System.out.println("DEBUG - deserializing: " + message);
 		String type = message.split("\\[")[0];
 		String payload = message.split("\\[")[1];
 		

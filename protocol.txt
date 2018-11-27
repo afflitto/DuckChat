@@ -26,4 +26,6 @@ Protocol:
         
     adminKick:
         Description: Set new AES key and call adminResetKey (send only to new users)
+        
+   debug
     
