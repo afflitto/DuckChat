@@ -21,6 +21,8 @@ import com.duckchat.protocol.NewKeyMessage;
 import com.duckchat.protocol.TextMessage;
 import com.duckchat.protocol.DebugMessage;
 
+import java.io.*;
+
 /**
  * A simple Swing-based client for the chat server. It has a main frame window
  * with a text field for entering strings and a text area to see the results of
@@ -33,7 +35,6 @@ public class ChannelClient implements Runnable{
     private ChannelManager manager;
     
     private String username = "";
-
     
     private JFrame frame = new JFrame("Channel Client");
     private JMenuBar menuBar = new JMenuBar();
@@ -127,6 +128,19 @@ public class ChannelClient implements Runnable{
 		// String addr = JOptionPane.showInputDialog(frame, "address", "duckchat",
 		// JOptionPane.QUESTION_MESSAGE);
 		connection = new ServerConnection("35.196.228.4", 2003);
+
+		FileInputStream in = null;
+		try {
+			in = new FileInputStream("settings.duck");
+			char c;
+			while((c = (char) in.read()) != -1) {
+				System.out.println(c);
+			}
+		} finally {
+			if (in != null) {
+	            in.close();
+	         }
+		}
 
 		try {
 			manager.setDuckyKeyPair(new DuckyKeyPair(1024));
