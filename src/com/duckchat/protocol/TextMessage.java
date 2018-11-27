@@ -5,6 +5,7 @@ import com.duckchat.crypto.*;
 import java.util.ArrayList;
 import javafx.util.Pair;
 
+@SuppressWarnings("restriction")
 public class TextMessage extends Message {
 
 	public TextMessage(ArrayList<Pair<String, String>> data) {

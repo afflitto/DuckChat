@@ -2,8 +2,10 @@ package com.duckchat.protocol;
 
 import java.util.ArrayList;
 
+
 import javafx.util.*;
 
+@SuppressWarnings("restriction")
 public class Message {
 	protected ArrayList<Pair<String, String>> data;
 	protected String type = "";

@@ -13,6 +13,7 @@ import javafx.util.Pair;
  *
  * @author matthew
  */
+@SuppressWarnings("restriction")
 public class DebugMessage extends Message{
     public DebugMessage(ArrayList<Pair<String, String>> data) {
 		super(data, "debug");

@@ -5,6 +5,7 @@ import java.util.Base64;
 
 import javafx.util.*;
 
+@SuppressWarnings("restriction")
 public class JoinChannelMessage extends Message {
 
 	public JoinChannelMessage(ArrayList<Pair<String, String>> data) {

@@ -90,7 +90,6 @@ public class ChannelClient implements Runnable{
         	
         	
             public void actionPerformed(ActionEvent e) {
-            	String cipherText;
 				try {
 	            	connection.send(new TextMessage("andrew", "chan", dataField.getText(), manager.getSymmetricKey()));
 	                dataField.setText("");
