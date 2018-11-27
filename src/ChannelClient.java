@@ -130,7 +130,7 @@ public class ChannelClient implements Runnable{
 		// InetAddress serverAddress = InetAddress.getLocalHost();
 		// String addr = JOptionPane.showInputDialog(frame, "address", "duckchat",
 		// JOptionPane.QUESTION_MESSAGE);
-		connection = new ServerConnection("localhost", 2003);
+		connection = new ServerConnection("35.196.228.4", 2003);
 
 		try {
 			manager.setDuckyKeyPair(new DuckyKeyPair(1024));
