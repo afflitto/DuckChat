@@ -1,12 +1,15 @@
 
+import com.duckchat.channel.User;
 import com.duckchat.crypto.DuckyKeyPair;
 import com.duckchat.crypto.DuckySymmetricKey;
+import com.duckchat.protocol.JoinChannelMessage;
 import com.duckchat.protocol.Message;
 import com.duckchat.protocol.NewKeyMessage;
 import com.duckchat.protocol.TextMessage;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -65,6 +68,17 @@ public class ChannelManager {
                     response = "new sym key: " + symmetricKey.encodeKey();
                 } catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException
                         | IllegalBlockSizeException | BadPaddingException e) {
+                    // TODO Auto-generated catch block
+                    response = "err";
+                    e.printStackTrace();
+                }
+            } else if (m.getType().equals("join")) {
+                try {
+                    JoinChannelMessage jm = new JoinChannelMessage(m.getRawData());
+                    User joinedUser = new User(jm.getName(), jm.getPublicKey());
+                    Application.addUser(joinedUser);
+                    response = joinedUser.getName() + " has joined.";
+                } catch (NoSuchAlgorithmException |  InvalidKeySpecException e) {
                     // TODO Auto-generated catch block
                     response = "err";
                     e.printStackTrace();

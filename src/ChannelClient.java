@@ -13,6 +13,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
+import com.duckchat.channel.User;
 import com.duckchat.crypto.DuckyKeyPair;
 import com.duckchat.crypto.DuckyPublicKey;
 import com.duckchat.crypto.DuckySymmetricKey;
@@ -39,6 +40,7 @@ public class ChannelClient implements Runnable{
     private JMenu menu = new JMenu("Admin");
     private JMenuItem keyGenItem = new JMenuItem("Generate new Group Key");
     private JMenuItem closeServerItem = new JMenuItem("Close Server");
+    private JMenuItem listUsersItem = new JMenuItem("List users");
     private JTextField dataField = new JTextField(40);
     private JTextArea messageArea = new JTextArea(60, 120);
     
@@ -59,6 +61,7 @@ public class ChannelClient implements Runnable{
         menuBar.add(menu);
         menu.add(keyGenItem);
         menu.add(closeServerItem);
+        menu.add(listUsersItem);
         frame.setJMenuBar(menuBar);
         
         manager = new ChannelManager(messageArea);
@@ -73,6 +76,16 @@ public class ChannelClient implements Runnable{
         closeServerItem.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
         		connection.send(new DebugMessage(0,"chan",manager.getSymmetricKey()));
+        	}
+        });
+        listUsersItem.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		System.out.println("Users:");
+        		messageArea.append("Users:");
+        		for(User user : Application.users) {
+        			System.out.println("\t"+user.getName()+":"+user.getPubKey().encode());
+            		messageArea.append("\t"+user.getName()+":"+user.getPubKey().encode());
+        		}
         	}
         });
 
