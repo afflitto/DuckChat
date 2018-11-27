@@ -1,6 +1,7 @@
 
 import com.duckchat.crypto.DuckyKeyPair;
 import com.duckchat.crypto.DuckySymmetricKey;
+import com.duckchat.protocol.DebugMessage;
 import com.duckchat.protocol.Message;
 import com.duckchat.protocol.NewKeyMessage;
 import com.duckchat.protocol.TextMessage;
@@ -69,7 +70,14 @@ public class ChannelManager {
                     response = "err";
                     e.printStackTrace();
                 }
-            } else {
+            } else if(m.getType().equals("debug")){
+            	DebugMessage dm = new DebugMessage(m.getRawData());
+            	if(dm.getDebugFlag() == 0) {
+            		System.out.println("Server closed successfully");
+            		//Dont expect more messages
+            		System.exit(0);
+            	}
+            }else {
                 response = m.serialize();
                 System.out.println("type: " + m.getType());
             }

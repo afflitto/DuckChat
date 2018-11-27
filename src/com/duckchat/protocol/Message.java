@@ -29,6 +29,7 @@ public class Message {
 	}
 	
 	public static Message deserialize(String message) {
+		System.out.println("DEBUG - deserializing: " + message);
 		String type = message.split("\\[")[0];
 		String payload = message.split("\\[")[1];
 		
