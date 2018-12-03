@@ -13,6 +13,8 @@ public class EchoServer extends Thread {
 	protected Socket clientSocket;
 	static int port = 2003;
 	static ServerSocket serverSocket = null;
+	static ClientHandler h;
+	
 
 	public static void main(String[] args) throws IOException {
 
@@ -50,8 +52,8 @@ public class EchoServer extends Thread {
 	}
 
 	public void run() {
-		System.out.println("New Communication Thread Started");
 
+		System.out.println("New Communication Thread Started");
 		try {
 			PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
 			BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
@@ -61,19 +63,19 @@ public class EchoServer extends Thread {
 			while ((inputLine = in.readLine()) != null && serverContinue) {
 				System.out.println("Server: " + inputLine);
 				out.println(inputLine);
-				
+
 				if (inputLine.contains("debug")) {
 					if (inputLine.contains("flag:0")) {
 						serverContinue = false;
 						System.out.println("Closing");
-						
+
 						new Thread(new Runnable() {
 
 							@Override
 							public void run() {
 								try {
 									serverSocket.close();
-									
+
 								} catch (IOException e) {
 									e.printStackTrace();
 								}
@@ -87,8 +89,11 @@ public class EchoServer extends Thread {
 			in.close();
 			clientSocket.close();
 		} catch (IOException e) {
-			System.err.println("Problem with Communication Server");
-			System.exit(1);
+			if (serverContinue) {
+				System.err.println("Problem with Communication Server");
+				System.exit(1);
+
+			}
 		}
 	}
 }

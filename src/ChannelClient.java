@@ -137,6 +137,7 @@ public class ChannelClient implements Runnable{
 		// String addr = JOptionPane.showInputDialog(frame, "address", "duckchat",
 		// JOptionPane.QUESTION_MESSAGE);
 		connection = new ServerConnection("35.196.228.4", 2003);
+		//35.196.228.4
 
 		try {
 			manager.setDuckyKeyPair(new DuckyKeyPair(1024));
