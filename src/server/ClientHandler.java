@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.Map;
 import com.duckchat.channel.User;
 import com.duckchat.crypto.DuckyPublicKey;
+import com.duckchat.protocol.JoinChannelMessage;
+import com.duckchat.protocol.Message;
 
 public class ClientHandler implements IClientHandler {
 
@@ -64,10 +66,10 @@ public class ClientHandler implements IClientHandler {
 
 	public User getUserFromJoin(String joinMessage) throws NoSuchAlgorithmException, InvalidKeySpecException {
 		User u;
-		String username = joinMessage.substring(joinMessage.indexOf(":") + 1, joinMessage.indexOf("&&")).trim();
-		String key = joinMessage.substring(joinMessage.indexOf("pubkey:") + new String("pubkey:").length() + 1,
-				joinMessage.indexOf("&&")).trim();
-		u = new User(username, new DuckyPublicKey(key));
+
+		JoinChannelMessage m = new JoinChannelMessage(Message.deserialize(joinMessage).getRawData());
+
+		u = new User(m.getName(), m.getPublicKey());
 		return u;
 	}
 
