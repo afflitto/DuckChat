@@ -35,8 +35,10 @@ public class Message {
 		System.out.println(s.length());
 		System.out.println("count: " + message.length());
 		String[] arr=null;
-		if(message!=null ) {
+		if(message.length()>0) {
 			arr = message.split("\\[");
+		}else {
+			return null;
 		}
 		if(arr.length>=2) {
 			//dont break
