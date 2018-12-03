@@ -142,8 +142,8 @@ public class ChannelClient implements Runnable {
 		// InetAddress serverAddress = InetAddress.getLocalHost();
 		// String addr = JOptionPane.showInputDialog(frame, "address", "duckchat",
 		// JOptionPane.QUESTION_MESSAGE);
-		connection = new ServerConnection("192.168.1.251", 2003);
-		// connection = new ServerConnection("35.196.228.4", 2003);
+		//connection = new ServerConnection("192.168.1.251", 2003);
+		connection = new ServerConnection("35.196.228.4", 2003);
 		// 35.196.228.4
 
 		try {
