@@ -72,6 +72,7 @@ public class EchoServer extends Thread {
 
 				if ((inputLine.contains("flag:0") && inputLine.contains("debug"))) {
 					serverContinue = false;
+					clientContinue = false;
 					System.out.println("Server Closing");
 					break;
 				} else if (inputLine.contains("leave")) {
