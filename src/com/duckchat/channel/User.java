@@ -9,7 +9,7 @@ public class User {
 	public User(String name, DuckyPublicKey pubKey) {
 		this.pubKey = pubKey;
 		this.name = name;
-		System.out.println("saved user "+name+":"+pubKey.encode());
+		System.out.println("initialized user "+name+":"+pubKey.encode());
 	}
 	
 	public String getName() {

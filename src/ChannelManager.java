@@ -92,7 +92,7 @@ public class ChannelManager {
 						try {
 							LeaveChannelMessage lm = new LeaveChannelMessage(m.getRawData());
 							User leftUser = new User(lm.getName(), lm.getPublicKey());
-							Application.addUser(leftUser);
+							Application.removeUser(lm.getName());
 							response = leftUser.getName() + " has left.";
 						} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
 							// TODO Auto-generated catch block
@@ -106,6 +106,7 @@ public class ChannelManager {
 							// Dont expect more messages
 							System.exit(0);
 						}
+
 					} else {
 						response = m.serialize();
 						System.out.println("type: " + m.getType());

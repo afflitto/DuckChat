@@ -53,6 +53,8 @@ public class EchoServer extends Thread {
 		start();
 	}
 
+	protected boolean clientContinue = true;
+
 	public ArrayList<String> newMessageQueue = new ArrayList<String>();
 	PrintWriter out;
 	BufferedReader in;
@@ -66,25 +68,15 @@ public class EchoServer extends Thread {
 
 			String inputLine;
 
-			while ((inputLine = in.readLine()) != null && serverContinue) {
+			while (clientContinue && (inputLine = in.readLine()) != null) {
 
-				if (inputLine.contains("debug")) {
-					if (inputLine.contains("flag:0")) {
-						serverContinue = false;
-						System.out.println("Closing");
-
-						new Thread(new Runnable() {
-
-							@Override
-							public void run() {
-								try {
-									serverSocket.close();
-								} catch (IOException e) {
-									e.printStackTrace();
-								}
-							}
-						}).start();
-					}
+				if ((inputLine.contains("flag:0") && inputLine.contains("debug"))) {
+					serverContinue = false;
+					System.out.println("Server Closing");
+					break;
+				} else if (inputLine.contains("leave")) {
+					clientContinue = false;
+					System.out.println("Thread Closing");
 				}
 
 				System.out.println("Server: " + inputLine);
@@ -94,20 +86,20 @@ public class EchoServer extends Thread {
 				// parseMesssage is called, we should wait for this call to finish, then flush
 				// newMessageQueue , this is done by the clienthandler
 				// Nice!
-
 			}
-
 			out.close();
 			in.close();
 			clientSocket.close();
 		} catch (IOException e) {
-			if (serverContinue) {
+			e.printStackTrace();
+			if (serverContinue == false) {
 				System.err.println("Problem with Communication Server");
 				System.exit(1);
 
+			} else if (clientContinue == false) {
+				System.err.println("Client closed");
 			}
 		}
-
 	}
 
 	public void flushMessageQueue() {

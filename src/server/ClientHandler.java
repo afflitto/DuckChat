@@ -56,6 +56,7 @@ public class ClientHandler {
 				e.printStackTrace();
 			}
 			users.remove(u);
+
 		} else if (message.contains("text")) {
 			// nothing special
 		}

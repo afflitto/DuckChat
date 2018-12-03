@@ -92,16 +92,15 @@ public class ChannelServer {
 					if (input == null || input.equals(".")) {
 						break;
 					}
-					//Just sent a normal message
-									
+					// Just sent a normal message
+
 					log("User " + name + " sent: " + input);
 					messages.add(name + ": " + input);
 
 					for (String m : messages) {
 						out.println(m);
 					}
-					
-					
+
 				}
 			} catch (IOException e) {
 				log("Error handling client# " + clientNumber + ": " + e);
