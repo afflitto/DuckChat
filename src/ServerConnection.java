@@ -23,6 +23,7 @@ public class ServerConnection {
 	}
 	
 	public void send(Message msg) {
+		System.out.println("Sent: " + msg.serialize());
 		out.println(msg.serialize());
 	}
 	
@@ -32,6 +33,10 @@ public class ServerConnection {
 	
 	public String readRaw() throws IOException {
 		return in.readLine();
+	}
+	
+	public boolean available() throws IOException {
+		return in.ready();
 	}
 	
 	public void close() throws IOException {

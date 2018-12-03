@@ -66,8 +66,8 @@ public class DuckySymmetricKey {
 			return new String(cipher.doFinal(cipherBytes));
 		} catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return "";
+			System.out.println("unable to decrypt message");
+			return "--encrypted--";
 		}	
 	}
 	

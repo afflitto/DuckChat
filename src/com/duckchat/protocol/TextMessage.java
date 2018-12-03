@@ -33,4 +33,13 @@ public class TextMessage extends Message {
 		}
 		return null;
 	}
+	
+	public String getName() {
+		for(Pair<String, String> pair : data) {
+			if(pair.getKey().equals("name")) {
+				return pair.getValue();
+			}
+		}
+		return null;
+	}
 }

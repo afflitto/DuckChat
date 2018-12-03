@@ -75,7 +75,11 @@ public class ChannelClient implements Runnable{
         	public void actionPerformed(ActionEvent e) {
         		DuckySymmetricKey newKey = new DuckySymmetricKey();
 				System.out.println("new sym key: " + newKey.encodeKey());
-        		connection.send(new NewKeyMessage(channel, newKey, new DuckyPublicKey(manager.getPair().getPublicKey())));
+				for(User user : Application.users) {
+					NewKeyMessage message = new NewKeyMessage(channel, newKey, user.getPubKey());
+					connection.send(message);
+				}
+        		//connection.send(new NewKeyMessage(channel, newKey, new DuckyPublicKey(manager.getPair().getPublicKey())));
         	}
         });
         closeServerItem.addActionListener(new ActionListener() {
@@ -91,6 +95,8 @@ public class ChannelClient implements Runnable{
         			System.out.println("\t"+user.getName()+":"+user.getPubKey().encode());
             		messageArea.append("\t"+user.getName()+":"+user.getPubKey().encode());
         		}
+        		System.out.println();
+        		messageArea.append("\n");
         	}
         });
 

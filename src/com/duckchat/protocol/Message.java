@@ -29,36 +29,35 @@ public class Message {
 	}
 	
 	public static Message deserialize(String message) {
-		
-		String s = "join[name:Matt && channel:chan && pubkey:MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCOWKPx1vItEWPub9tg3Cm2re7lcZJj7ZdkdEWwARLyLo6BN/mfAcpbBd9XGDYQ9du1FEtwyjemATJ9q/xB80Eo2A02efreIfvi+ALbUMAk1UkURbJ9HxFN8OjhS7XmOTbe2i6/BXuITCU+O++lVrFj0adzNcZ0mUPEKjoLZ79etwIDAQAB && ]";
+		//String s = "join[name:Matt && channel:chan && pubkey:MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCOWKPx1vItEWPub9tg3Cm2re7lcZJj7ZdkdEWwARLyLo6BN/mfAcpbBd9XGDYQ9du1FEtwyjemATJ9q/xB80Eo2A02efreIfvi+ALbUMAk1UkURbJ9HxFN8OjhS7XmOTbe2i6/BXuITCU+O++lVrFj0adzNcZ0mUPEKjoLZ79etwIDAQAB && ]";
 		System.out.println("DEBUG - deserializing: " + message);
-		System.out.println(s.length());
-		System.out.println("count: " + message.length());
-		String[] arr=null;
-		if(message!=null ) {
+		//System.out.println(s.length());
+		//System.out.println("count: " + message.length());
+		String[] arr;
+		if(message != null) {
 			arr = message.split("\\[");
-		}
-		if(arr.length>=2) {
-			//dont break
-		}else {
+			if(arr != null && arr.length != 2) {
+				return null; 
+			}
+			String type = message.split("\\[")[0];
+			String payload = message.split("\\[")[1];
+			
+			String[] pairs = payload.split(" && ");
+			ArrayList<Pair<String, String>> pairList = new ArrayList<>();
+			
+			for(String pair : pairs) {
+				if(pair.split(":").length > 1) {
+					String key = pair.split(":")[0];
+					String value = pair.split(":")[1];
+					
+					pairList.add(new Pair<>(key, value));
+				}
+			}
+			
+			return new Message(pairList, type);
+		} else {
 			return null;
 		}
-		String type = message.split("\\[")[0];
-		String payload = message.split("\\[")[1];
-		
-		String[] pairs = payload.split(" && ");
-		ArrayList<Pair<String, String>> pairList = new ArrayList<>();
-		
-		for(String pair : pairs) {
-			if(pair.split(":").length > 1) {
-				String key = pair.split(":")[0];
-				String value = pair.split(":")[1];
-				
-				pairList.add(new Pair<>(key, value));
-			}
-		}
-		
-		return new Message(pairList, type);
 	}
 	
 	public String getType() {
