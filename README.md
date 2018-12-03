@@ -3,10 +3,9 @@
 This is an end-to-end encrypted chat application, built in Java.
 
 Authors:
-- Andrew Afflitto
-- Matt Duffy
-- Connor O'Hara
-- Joe Nichols
+- [Andrew Afflitto](https://github.com/afflitto)
+- [Matt](https://github.com/matt3214)
+- [s1nus](https://github.com/s1nus)
 
 Download the client [here](https://github.com/afflitto/DuckChat/releases/download/client1.0/client.jar).
 
