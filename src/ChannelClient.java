@@ -17,6 +17,7 @@ import javax.swing.JTextField;
 import com.duckchat.channel.User;
 import com.duckchat.crypto.*;
 import com.duckchat.protocol.JoinChannelMessage;
+import com.duckchat.protocol.LeaveChannelMessage;
 import com.duckchat.protocol.NewKeyMessage;
 import com.duckchat.protocol.TextMessage;
 import com.duckchat.protocol.DebugMessage;
@@ -64,6 +65,7 @@ public class ChannelClient implements Runnable {
 		menu.add(closeServerItem);
 		menu.add(listUsersItem);
 		frame.setJMenuBar(menuBar);
+		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
 		manager = new ChannelManager(messageArea);
 
@@ -115,6 +117,16 @@ public class ChannelClient implements Runnable {
 					e1.printStackTrace();
 				}
 
+			}
+		});
+
+		frame.addWindowListener(new java.awt.event.WindowAdapter() {
+			@Override
+			public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+				if (JOptionPane.showConfirmDialog(frame, "Are you sure you want to close this window?", "Close Window?",
+						JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+					connection.send(new LeaveChannelMessage(username, channel, manager.getPair().getPublicKey()));
+				}
 			}
 		});
 	}

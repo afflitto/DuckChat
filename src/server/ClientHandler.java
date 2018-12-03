@@ -6,11 +6,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import com.duckchat.channel.User;
-import com.duckchat.crypto.DuckyPublicKey;
 import com.duckchat.protocol.JoinChannelMessage;
+import com.duckchat.protocol.LeaveChannelMessage;
 import com.duckchat.protocol.Message;
 
-public class ClientHandler implements IClientHandler {
+public class ClientHandler {
 
 	public Map<User, EchoServer> users = new HashMap<User, EchoServer>();
 
@@ -48,26 +48,35 @@ public class ClientHandler implements IClientHandler {
 				e.printStackTrace();
 			}
 			users.put(u, from);
+		} else if (message.contains("leave")) {
+			User u = null;
+			try {
+				u = getUserFromLeave(message);
+			} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+				e.printStackTrace();
+			}
+			users.remove(u);
 		} else if (message.contains("text")) {
 			// nothing special
 		}
 
-		messageRecieved(message);
+		updateUsers(message);
 
-	}
-
-	public void userJoined(User u) {
-		System.out.println("User Joined: " + u.getName());
-	}
-
-	public void messageRecieved(String messageString) {
-		updateUsers(messageString);
 	}
 
 	public User getUserFromJoin(String joinMessage) throws NoSuchAlgorithmException, InvalidKeySpecException {
 		User u;
 
 		JoinChannelMessage m = new JoinChannelMessage(Message.deserialize(joinMessage).getRawData());
+
+		u = new User(m.getName(), m.getPublicKey());
+		return u;
+	}
+
+	public User getUserFromLeave(String leaveMessage) throws NoSuchAlgorithmException, InvalidKeySpecException {
+		User u;
+
+		LeaveChannelMessage m = new LeaveChannelMessage(Message.deserialize(leaveMessage).getRawData());
 
 		u = new User(m.getName(), m.getPublicKey());
 		return u;

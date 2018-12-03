@@ -14,6 +14,7 @@ import com.duckchat.crypto.DuckyKeyPair;
 import com.duckchat.crypto.DuckySymmetricKey;
 import com.duckchat.protocol.DebugMessage;
 import com.duckchat.protocol.JoinChannelMessage;
+import com.duckchat.protocol.LeaveChannelMessage;
 import com.duckchat.protocol.Message;
 import com.duckchat.protocol.NewKeyMessage;
 import com.duckchat.protocol.TextMessage;
@@ -82,6 +83,17 @@ public class ChannelManager {
 							User joinedUser = new User(jm.getName(), jm.getPublicKey());
 							Application.addUser(joinedUser);
 							response = joinedUser.getName() + " has joined.";
+						} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+							// TODO Auto-generated catch block
+							response = "err";
+							e.printStackTrace();
+						}
+					} else if (m.getType().equals("leave")) {
+						try {
+							LeaveChannelMessage lm = new LeaveChannelMessage(m.getRawData());
+							User leftUser = new User(lm.getName(), lm.getPublicKey());
+							Application.addUser(leftUser);
+							response = leftUser.getName() + " has left.";
 						} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
 							// TODO Auto-generated catch block
 							response = "err";
