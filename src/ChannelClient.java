@@ -90,7 +90,7 @@ public class ChannelClient implements Runnable {
 				messageArea.append("Users:");
 				for (User user : Application.users) {
 					System.out.println("\t" + user.getName() + ":" + user.getPubKey().encode());
-					messageArea.append("\t" + user.getName() + ":" + user.getPubKey().encode());
+					messageArea.append("\t" + user.getName() + ":" + user.getPubKey().encode() + "\n");
 				}
 				System.out.println();
 				messageArea.append("\n");

@@ -54,13 +54,15 @@ public class EchoServer extends Thread {
 	}
 
 	public ArrayList<String> newMessageQueue = new ArrayList<String>();
+	PrintWriter out;
+	BufferedReader in;
 
 	public void run() {
 
 		System.out.println("New Communication Thread Started");
 		try {
-			PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-			BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+			out = new PrintWriter(clientSocket.getOutputStream(), true);
+			in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
 			String inputLine;
 
@@ -88,12 +90,9 @@ public class EchoServer extends Thread {
 				System.out.println("Server: " + inputLine);
 				h.parseMessage(inputLine, this);
 				// This should trigger newMessageQueue being populated by inputLine, as well as
-				// other messages sent by other client stubs
-
-				for (String s : newMessageQueue) {
-					out.println(s);
-				}
-				newMessageQueue.clear();
+				// other messages sent by other client stubs, so when new messages come in, IE
+				// parseMesssage is called, we should wait for this call to finish, then flush
+				// newMessageQueue , this is done by the clienthandler
 				// Nice!
 
 			}
@@ -108,5 +107,13 @@ public class EchoServer extends Thread {
 
 			}
 		}
+
+	}
+
+	public void flushMessageQueue() {
+		for (String s : newMessageQueue) {
+			out.println(s);
+		}
+		newMessageQueue.clear();
 	}
 }

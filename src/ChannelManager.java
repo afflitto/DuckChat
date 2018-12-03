@@ -56,7 +56,7 @@ public class ChannelManager {
 	public void parseResponse(ServerConnection connection) {
 		String response = "";
 		try {
-			if(connection.available()) {
+			if (connection.available()) {
 				System.out.println("New message available");
 				Message m = Message.deserialize(connection.readRaw());
 				if (m != null) {
@@ -103,7 +103,7 @@ public class ChannelManager {
 				messageArea.append(response + "\n");
 			}
 		} catch (IOException ex) {
-			messages.add("Error: "+ex.getMessage());
+			messages.add("Error: " + ex.getMessage());
 			messageArea.append("Error: " + ex.getMessage());
 		}
 	}
