@@ -89,6 +89,7 @@ public class EchoServer extends Thread {
 				h.parseMessage(inputLine, this);
 				// This should trigger newMessageQueue being populated by inputLine, as well as
 				// other messages sent by other client stubs
+
 				for (String s : newMessageQueue) {
 					out.println(s);
 				}
