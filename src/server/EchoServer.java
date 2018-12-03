@@ -1,11 +1,13 @@
 package server;
 
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 
 public class EchoServer extends Thread {
 
@@ -14,9 +16,10 @@ public class EchoServer extends Thread {
 	static int port = 2003;
 	static ServerSocket serverSocket = null;
 	static ClientHandler h;
-	
 
 	public static void main(String[] args) throws IOException {
+
+		h = new ClientHandler();
 
 		try {
 			serverSocket = new ServerSocket(port);
@@ -51,6 +54,8 @@ public class EchoServer extends Thread {
 		start();
 	}
 
+	public ArrayList<String> newMessageQueue = new ArrayList<String>();
+
 	public void run() {
 
 		System.out.println("New Communication Thread Started");
@@ -61,8 +66,6 @@ public class EchoServer extends Thread {
 			String inputLine;
 
 			while ((inputLine = in.readLine()) != null && serverContinue) {
-				System.out.println("Server: " + inputLine);
-				out.println(inputLine);
 
 				if (inputLine.contains("debug")) {
 					if (inputLine.contains("flag:0")) {
@@ -75,7 +78,6 @@ public class EchoServer extends Thread {
 							public void run() {
 								try {
 									serverSocket.close();
-
 								} catch (IOException e) {
 									e.printStackTrace();
 								}
@@ -83,6 +85,17 @@ public class EchoServer extends Thread {
 						}).start();
 					}
 				}
+
+				System.out.println("Server: " + inputLine);
+				h.parseMessage(inputLine, this);
+				// This should trigger newMessageQueue being populated by inputLine, as well as
+				// other messages sent by other client stubs
+				for (String s : newMessageQueue) {
+					out.println(s);
+				}
+				newMessageQueue.clear();
+				// Nice!
+
 			}
 
 			out.close();
