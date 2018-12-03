@@ -51,10 +51,11 @@ public class ChannelClient implements Runnable {
 	 * contents to the server.
 	 */
 	public ChannelClient() {
-//gather user info
+		//gather user info
 		username = JOptionPane.showInputDialog("What is your name?");
-		channel = JOptionPane.showInputDialog("What Channel would you like to join?");
-
+		//TODO: Support channels: channel = JOptionPane.showInputDialog("What Channel would you like to join?");
+		channel = "chan"; //default channel
+		
 		// Layout GUI
 		messageArea.setEditable(false);
 		frame.getContentPane().add(dataField, "South");
@@ -70,15 +71,14 @@ public class ChannelClient implements Runnable {
 		manager = new ChannelManager(messageArea);
 
 		keyGenItem.addActionListener(new ActionListener() {
+			//Button to set a new group key
 			public void actionPerformed(ActionEvent e) {
 				DuckySymmetricKey newKey = new DuckySymmetricKey();
 				System.out.println("new sym key: " + newKey.encodeKey());
-				for (User user : Application.users) {
+				for (User user : Application.users) { //Send this key to all clients
 					NewKeyMessage message = new NewKeyMessage(channel, newKey, user.getPubKey());
 					connection.send(message);
 				}
-				// connection.send(new NewKeyMessage(channel, newKey, new
-				// DuckyPublicKey(manager.getPair().getPublicKey())));
 			}
 		});
 		closeServerItem.addActionListener(new ActionListener() {
@@ -111,6 +111,7 @@ public class ChannelClient implements Runnable {
 
 			public void actionPerformed(ActionEvent e) {
 				try {
+					//send encrypted message and clear text field
 					connection.send(new TextMessage(username, channel, dataField.getText(), manager.getSymmetricKey()));
 					dataField.setText("");
 				} catch (Exception e1) {
@@ -122,6 +123,7 @@ public class ChannelClient implements Runnable {
 		});
 
 		frame.addWindowListener(new java.awt.event.WindowAdapter() {
+			//Send LeaveChannelMessage on close
 			@Override
 			public void windowClosing(java.awt.event.WindowEvent windowEvent) {
 				if (JOptionPane.showConfirmDialog(frame, "Are you sure you want to close this window?", "Close Window?",
@@ -139,19 +141,13 @@ public class ChannelClient implements Runnable {
 	 * of text to the client immediately after establishing a connection.
 	 */
 	public void connectToServer() throws IOException {
-		// InetAddress serverAddress = InetAddress.getLocalHost();
-		// String addr = JOptionPane.showInputDialog(frame, "address", "duckchat",
-		// JOptionPane.QUESTION_MESSAGE);
-		//connection = new ServerConnection("192.168.1.251", 2003);
-		connection = new ServerConnection("35.196.228.4", 2003);
-		// 35.196.228.4
+		connection = new ServerConnection("35.196.228.4", 2003); //IP of server
 
 		try {
-			manager.setDuckyKeyPair(new DuckyKeyPair(1024));
-			manager.setSymmetricKey(new DuckySymmetricKey());
-			connection.send(new JoinChannelMessage(username, channel, manager.getPair().getPublicKey()));
+			manager.setDuckyKeyPair(new DuckyKeyPair(1024)); //Generate new pub/priv key pair
+			manager.setSymmetricKey(new DuckySymmetricKey()); //generate new group key
+			connection.send(new JoinChannelMessage(username, channel, manager.getPair().getPublicKey())); //send join message
 		} catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -174,9 +170,7 @@ public class ChannelClient implements Runnable {
 		System.out.println("I'm Connected!");
 
 		while (true) {
-
-			manager.parseResponse(connection);
-
+			manager.parseResponse(connection); //Wait for new messages
 		}
 	}
 }

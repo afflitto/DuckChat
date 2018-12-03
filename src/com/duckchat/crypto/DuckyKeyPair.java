@@ -12,7 +12,7 @@ public class DuckyKeyPair {
 	private KeyPair pair;
 	
 	public DuckyKeyPair() throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException {
-		this(1024);
+		this(1024); //default to 1024 bits
 	}
 	
 	public DuckyKeyPair(int keySize) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException {

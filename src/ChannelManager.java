@@ -57,26 +57,31 @@ public class ChannelManager {
 	public void parseResponse(ServerConnection connection) {
 		String response = "";
 		try {
-			if (connection.available()) {
+			if (connection.available()) { //message available
 				System.out.println("New message available");
 				Message m = Message.deserialize(connection.readRaw());
+				
 				if (m != null) {
+					//"Text" message
 					if (m.getType().equals("text")) {
 						TextMessage tm = new TextMessage(m.getRawData());
 						response = symmetricKey.decryptText(tm.getCipherText());
 						System.out.println("msg: " + response);
 						response = tm.getName() + ": " + response;
+						
+					//"Key" message
 					} else if (m.getType().equals("key")) {
 						try {
 							NewKeyMessage km = new NewKeyMessage(m.getRawData());
 							symmetricKey = km.decryptSymmetricKey(pair);
-							System.out.println("new sym key: " + symmetricKey.encodeKey());
-							response = "new sym key: " + symmetricKey.encodeKey();
+							System.out.println("--New Group Key-- (" + symmetricKey.encodeKey() + ")");
+							response = "--New Group Key-- (" + symmetricKey.encodeKey() + ")";
 						} catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException
 								| IllegalBlockSizeException | BadPaddingException e) {
-							// TODO Auto-generated catch block
 							System.out.println("unable to decrypt key, ignoring");
 						}
+						
+					//"Join" message
 					} else if (m.getType().equals("join")) {
 						try {
 							JoinChannelMessage jm = new JoinChannelMessage(m.getRawData());
@@ -84,10 +89,11 @@ public class ChannelManager {
 							Application.addUser(joinedUser);
 							response = joinedUser.getName() + " has joined.";
 						} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-							// TODO Auto-generated catch block
-							response = "err";
+							response = "Error!";
 							e.printStackTrace();
 						}
+						
+					//"Leave" message
 					} else if (m.getType().equals("leave")) {
 						try {
 							LeaveChannelMessage lm = new LeaveChannelMessage(m.getRawData());
@@ -95,25 +101,28 @@ public class ChannelManager {
 							Application.removeUser(lm.getName());
 							response = leftUser.getName() + " has left.";
 						} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-							// TODO Auto-generated catch block
-							response = "err";
+							response = "Error!";
 							e.printStackTrace();
 						}
+						
+					//"Debug" message
 					} else if (m.getType().equals("debug")) {
 						DebugMessage dm = new DebugMessage(m.getRawData());
 						if (dm.getDebugFlag() == 0) {
 							System.out.println("Server closed successfully");
-							// Dont expect more messages
+							// Don't expect more messages
 							System.exit(0);
 						}
 
+					//unknown type, print message literal
 					} else {
-						response = m.serialize();
-						System.out.println("type: " + m.getType());
+						response = "debug: "+m.serialize();
 					}
 				}
-				messages.add(response);
-				messageArea.append(response + "\n");
+				if(!response.equals("")) {
+					messages.add(response);
+					messageArea.append(response + "\n");
+				}
 			}
 		} catch (IOException ex) {
 			messages.add("Error: " + ex.getMessage());

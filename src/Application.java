@@ -6,10 +6,10 @@ import com.duckchat.protocol.Message;
 
 public class Application {
 
-	private static ArrayList<Message> messages = new ArrayList<Message>();
-	public static ArrayList<User> users = new ArrayList<User>();
-	private static DuckyKeyPair keyPair;
-	private static DuckySymmetricKey groupKey;
+	private static ArrayList<Message> messages = new ArrayList<Message>(); //list to hold messages
+	public static ArrayList<User> users = new ArrayList<User>(); //list to hold users and pubkeys
+	private static DuckyKeyPair keyPair; //this client's public/private key pair
+	private static DuckySymmetricKey groupKey; //current group symmetric key
 
 	public static void addMessage(Message message) {
 		messages.add(message);

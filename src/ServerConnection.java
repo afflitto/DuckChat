@@ -35,6 +35,7 @@ public class ServerConnection {
 		return in.readLine();
 	}
 	
+	//New message incoming?
 	public boolean available() throws IOException {
 		return in.ready();
 	}
