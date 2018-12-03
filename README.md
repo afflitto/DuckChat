@@ -8,4 +8,4 @@ Authors:
 - Connor O'Hara
 - Joe Nichols
 
-Download the client [here]:https://github.com/afflitto/DuckChat/releases/download/client1.0/client.jar
+Download the client [here](https://github.com/afflitto/DuckChat/releases/download/client1.0/client.jar)
