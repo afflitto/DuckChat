@@ -59,14 +59,11 @@ public class ChannelClient implements Runnable {
 		messageArea.setEditable(false);
 		frame.getContentPane().add(dataField, "South");
 		frame.getContentPane().add(new JScrollPane(messageArea), "Center");
-
 		menuBar.add(menu);
 		menu.add(keyGenItem);
 		menu.add(closeServerItem);
 		menu.add(listUsersItem);
 		frame.setJMenuBar(menuBar);
-		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-
 		manager = new ChannelManager(messageArea);
 
 		keyGenItem.addActionListener(new ActionListener() {
@@ -117,7 +114,6 @@ public class ChannelClient implements Runnable {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-
 			}
 		});
 
@@ -142,7 +138,7 @@ public class ChannelClient implements Runnable {
 		// InetAddress serverAddress = InetAddress.getLocalHost();
 		// String addr = JOptionPane.showInputDialog(frame, "address", "duckchat",
 		// JOptionPane.QUESTION_MESSAGE);
-		//connection = new ServerConnection("192.168.1.251", 2003);
+		// connection = new ServerConnection("192.168.1.251", 2003);
 		connection = new ServerConnection("35.196.228.4", 2003);
 		// 35.196.228.4
 
@@ -163,7 +159,9 @@ public class ChannelClient implements Runnable {
 	public static void main(String[] args) throws Exception {
 		ChannelClient client = new ChannelClient();
 		client.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		client.frame.setSize(800, 600);
 		client.frame.pack();
+		client.frame.setLocationRelativeTo(null);
 		client.frame.setVisible(true);
 		client.connectToServer();
 		Thread t = new Thread(client);

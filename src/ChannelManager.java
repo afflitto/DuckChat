@@ -18,6 +18,7 @@ import com.duckchat.protocol.LeaveChannelMessage;
 import com.duckchat.protocol.Message;
 import com.duckchat.protocol.NewKeyMessage;
 import com.duckchat.protocol.TextMessage;
+import com.duckchat.protocol.UserListMessage;
 
 /**
  * Handles the incoming messages from the server
@@ -99,6 +100,11 @@ public class ChannelManager {
 							response = "err";
 							e.printStackTrace();
 						}
+					} else if (m.getType().equals("list")) {
+						UserListMessage ulm = new UserListMessage(m.getRawData());
+						User[] list = ulm.getUserList();
+						Application.setUserList(list);
+						response = "NULL";
 					} else if (m.getType().equals("debug")) {
 						DebugMessage dm = new DebugMessage(m.getRawData());
 						if (dm.getDebugFlag() == 0) {
@@ -115,7 +121,9 @@ public class ChannelManager {
 				messages.add(response);
 				messageArea.append(response + "\n");
 			}
-		} catch (IOException ex) {
+		} catch (
+
+		IOException ex) {
 			messages.add("Error: " + ex.getMessage());
 			messageArea.append("Error: " + ex.getMessage());
 		}

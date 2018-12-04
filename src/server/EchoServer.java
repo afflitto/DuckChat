@@ -75,6 +75,9 @@ public class EchoServer extends Thread {
 					clientContinue = false;
 					System.out.println("Server Closing");
 					break;
+				} else if ((inputLine.contains("flag:1") && inputLine.contains("debug"))) {
+					System.out.println("Server Sending UserList");
+					h.sendUserList(this);
 				} else if (inputLine.contains("leave")) {
 					clientContinue = false;
 					System.out.println("Thread Closing");
@@ -109,4 +112,5 @@ public class EchoServer extends Thread {
 		}
 		newMessageQueue.clear();
 	}
+
 }

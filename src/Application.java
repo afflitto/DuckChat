@@ -23,6 +23,13 @@ public class Application {
 		users.add(user);
 	}
 
+	public static void setUserList(User[] list) {
+		users.clear();
+		for (User u : list) {
+			users.add(u);
+		}
+	}
+
 	public static void removeUser(String username) {
 		for (int i = 0; i < users.size(); i++) {
 			if (users.get(i).getName().equals(username)) {

@@ -87,4 +87,11 @@ public class ClientHandler {
 
 	}
 
+	public void sendUserList(EchoServer clientStub) {
+		for (User u : users.keySet()) {
+			clientStub.newMessageQueue.add(u.getName() + "|" + u.getPubKey().encode());
+			clientStub.flushMessageQueue();
+		}
+	}
+
 }
