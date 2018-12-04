@@ -45,7 +45,6 @@ public class DuckySymmetricKey {
 			byte[] cipherBytes = cipher.doFinal(msg.getBytes());
 			return encode(cipherBytes, iv);
 		} catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return "";
 		}		
@@ -65,7 +64,6 @@ public class DuckySymmetricKey {
 			cipher.init(Cipher.DECRYPT_MODE, secretKey, parameterSpec);
 			return new String(cipher.doFinal(cipherBytes));
 		} catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException e) {
-			// TODO Auto-generated catch block
 			System.out.println("unable to decrypt message");
 			return "--encrypted--";
 		}	
@@ -73,7 +71,7 @@ public class DuckySymmetricKey {
 	
 	private String encode(byte[] cipherBytes, byte[] iv) throws Exception {
 		if(iv.length != 12) {
-			throw new Exception("wrong IV length ya dummie");
+			throw new Exception("wrong IV length!");
 		}
 		ByteBuffer byteBuffer = ByteBuffer.allocate(12 + cipherBytes.length);
 		byteBuffer.put(iv);
